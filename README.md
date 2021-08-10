@@ -14,6 +14,23 @@ ICCV 2021 (Oral)
 
 ![](picture/picture.png)
 
+## Running inference in Docker
+
+Download pretrained model (see below) before building the image. Then build Docker images with
+
+```
+docker build -t painttransformer .
+```
+
+Run inference with
+
+```
+docker run --rm -it -v /path/to/images:/work painttransformer image.jpg outputs
+```
+
+The directory `/path/to/images/outputs` will be created with the outputs.
+
+
 ## Prerequisites
 
 * Linux or macOS
@@ -36,7 +53,7 @@ ICCV 2021 (Oral)
   cd inference
   ```
 
-* Inference: 
+* Inference:
 
   ```shell
   python inference.py
@@ -56,7 +73,7 @@ ICCV 2021 (Oral)
     python -m visdom.server
     ```
 
-  * Then, simply run: 
+  * Then, simply run:
 
     ```shell
     cd train
@@ -65,7 +82,7 @@ ICCV 2021 (Oral)
 
   * You can monitor training status at http://localhost:8097/ and models would be saved at checkpoints/painter folder.
 
-* You may feel free to try other training options written in train.sh. 
+* You may feel free to try other training options written in train.sh.
 
 ## More Results
 

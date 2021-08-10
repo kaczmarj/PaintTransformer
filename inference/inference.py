@@ -6,8 +6,13 @@ import network
 import morphology
 import os
 import math
+from pathlib import Path
+
+import click
 
 idx = 0
+
+_here = Path(__file__).parent.absolute()
 
 
 def save_img(img, output_path):
@@ -372,8 +377,11 @@ def crop(img, h, w):
     img = img[:, :, pad_h:H - pad_h - remainder_h, pad_w:W - pad_w - remainder_w]
     return img
 
-
-def main(input_path, model_path, output_dir, need_animation=False, resize_h=None, resize_w=None, serial=False):
+@click.command()
+@click.argument("input_path", type=click.Path(exists=True))
+@click.argument("output_dir", type=click.Path())
+@click.option("--serial", is_flag=True, help="enable serial processing (less memory but more time)")
+def main(*, input_path, output_dir, model_path=_here/"model.pth", need_animation=False, resize_h=None, resize_w=None, serial=False):
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     input_name = os.path.basename(input_path)
@@ -395,8 +403,8 @@ def main(input_path, model_path, output_dir, need_animation=False, resize_h=None
     for param in net_g.parameters():
         param.requires_grad = False
 
-    brush_large_vertical = read_img('brush/brush_large_vertical.png', 'L').to(device)
-    brush_large_horizontal = read_img('brush/brush_large_horizontal.png', 'L').to(device)
+    brush_large_vertical = read_img(_here/'brush/brush_large_vertical.png', 'L').to(device)
+    brush_large_horizontal = read_img(_here/'brush/brush_large_horizontal.png', 'L').to(device)
     meta_brushes = torch.cat(
         [brush_large_vertical, brush_large_horizontal], dim=0)
 
@@ -487,10 +495,4 @@ def main(input_path, model_path, output_dir, need_animation=False, resize_h=None
 
 
 if __name__ == '__main__':
-    main(input_path='input/chicago.jpg',
-         model_path='model.pth',
-         output_dir='output/',
-         need_animation=False,  # whether need intermediate results for animation.
-         resize_h=None,         # resize original input to this size. None means do not resize.
-         resize_w=None,         # resize original input to this size. None means do not resize.
-         serial=False)          # if need animation, serial must be True.
+    main()
